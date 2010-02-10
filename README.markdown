@@ -39,6 +39,12 @@ The following signal is emitted whenever the details for a track is changed by t
         "mtime", "last-seen", "last-played",
         "rating", "playcount"
 
+The following signal is subscribed to and processed:
+
+- Path: /Track
+  - Member: Rating
+    - in sig: "ssv"  (artist, track title, rating)
+    
 
 Installation
 ============

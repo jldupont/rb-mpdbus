@@ -3,6 +3,7 @@
 
     Created on 2010-02-10
 """
+import dbus
 import dbus.service
 from mbus import Bus
 
@@ -40,6 +41,12 @@ class hTrack(dbus.service.Object):
     @dbus.service.signal(dbus_interface="org.freedesktop.MediaPlayer", signature="a{sv}")
     def Details(self, dic):
         pass
+    
+    def Rating(self, artist, title, rating):
+        """
+        Rating Signal
+        """
+        print ">>> RATING: artist(%s) title(%s) rating(%s)" % (artist, title, rating)
 
     def hEntryChanged(self, _, ed):
         self.Details(ed)
@@ -47,3 +54,6 @@ class hTrack(dbus.service.Object):
     
 track=hTrack()
 Bus.subscribe("entry-changed", track.hEntryChanged)
+
+## Subscribe to the "/Track/Rating" signal
+dbus.Bus().add_signal_receiver(track.Rating, signal_name="Rating", dbus_interface="org.freedesktop.MediaPlayer", bus_name=None, path="/Track")

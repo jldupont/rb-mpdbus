@@ -52,9 +52,10 @@ class MpDBusPlugin (rb.Plugin):
         The rest of the work will be done through the
         event "playing_changed"
         """
-        self.current_entry = sp.get_playing_entry()
-        ed = EntryHelper.track_details(self.shell, entry)
-        Bus.publish(self, "entry-playing", ed)
+        if entry:
+            self.current_entry = sp.get_playing_entry()
+            ed = EntryHelper.track_details(self.shell, entry)
+            Bus.publish(self, "entry-playing", ed)
         
 
     def load_complete(self, db):
@@ -68,8 +69,9 @@ class MpDBusPlugin (rb.Plugin):
         the "startup phase" which consists in scanning
         all the sources of the library
         """
-        ed = EntryHelper.track_details(self.shell, entry)
-        Bus.publish(self, "entry-changed", ed)
+        if entry:
+            ed = EntryHelper.track_details(self.shell, entry)
+            Bus.publish(self, "entry-changed", ed)
 
 
 
