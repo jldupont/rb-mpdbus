@@ -59,7 +59,7 @@ There are 2 methods:
 
 1. Use the Ubuntu Debian repository [jldupont](https://launchpad.net/~jldupont/+archive/jldupont)  with the package "rbsynclastfm"
 
-2. Use the "Download Source" function of this git repo and place the "rbmpdbus" folder in ".gnome/rhythmbox/plugins"
+2. Use the "Download Source" function of this git repo and use "sudo make install"
 
 Dependencies
 ============
