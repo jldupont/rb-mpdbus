@@ -15,9 +15,10 @@ ppa:
 	@echo "mkdir directories ( /tmp/$(PRJ_NAME)/$(PRJ_NAME)-$(PRJ_VERSION) )"
 	mkdir -p "/tmp/${PRJ_NAME}"
 	mkdir -p "/tmp/${PRJ_NAME}/${PRJ_NAME}-${PRJ_VERSION}"
+	mkdir -p "/tmp/${PRJ_NAME}/${PRJ_NAME}-${PRJ_VERSION}/src"
 	
 	@echo "Copying package folder"
-	@rsync -r --exclude=*.git* ../src/ "/tmp/$(PRJ_NAME)/$(PRJ_NAME)-$(PRJ_VERSION)"
+	@rsync -r --exclude=*.git* ../src/ "/tmp/$(PRJ_NAME)/$(PRJ_NAME)-$(PRJ_VERSION)/src"
 
 	@echo "Copying debian folder"
 	@rsync -r --exclude=*.svn* debian "/tmp/$(PRJ_NAME)/$(PRJ_NAME)-$(PRJ_VERSION)"

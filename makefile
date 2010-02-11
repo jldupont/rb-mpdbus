@@ -39,8 +39,8 @@ uninstall:
 		
 install:
 	@install -d $(DESTDIR)$(RBP)/${PLUGIN_NAME}
-	@install -D $(CURDIR)/${PLUGIN_NAME}/*.py                      $(DESTDIR)$(RBP)/${PLUGIN_NAME}/
-	@install -D $(CURDIR)/${PLUGIN_NAME}/${PLUGIN_NAME}.rb-plugin  $(DESTDIR)$(RBP)/${PLUGIN_NAME}/${PLUGIN_NAME}.rb-plugin
+	@install -D $(CURDIR)/src/${PLUGIN_NAME}/*.py                      $(DESTDIR)$(RBP)/${PLUGIN_NAME}/
+	@install -D $(CURDIR)/src/${PLUGIN_NAME}/${PLUGIN_NAME}.rb-plugin  $(DESTDIR)$(RBP)/${PLUGIN_NAME}/${PLUGIN_NAME}.rb-plugin
 	@python -m compileall ${DESTDIR}$(RBP)/${PLUGIN_NAME}
 	
 buildsrc:
