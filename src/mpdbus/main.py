@@ -2,6 +2,11 @@
     @author: jldupont
 
     Created on 2010-02-09
+    
+    The overall code for this plugin might appear overkill
+    considering the low complexity of the current feature set
+    because provisions for future enhancements are already in place. 
+    
 """
 from mbus import Bus
 import rhythmdb, rb #@UnresolvedImport
@@ -21,6 +26,7 @@ class MpDBusPlugin (rb.Plugin):
     def activate (self, shell):
         self.shell = shell
         self.db=shell.props.db
+        Bus.publish(self, "db", self.db)
         
         sp = shell.get_player ()
         self.spcb = (
@@ -55,7 +61,7 @@ class MpDBusPlugin (rb.Plugin):
         if entry:
             self.current_entry = sp.get_playing_entry()
             ed = EntryHelper.track_details(self.shell, entry)
-            Bus.publish(self, "entry-playing", ed)
+            Bus.publish(self, "entry-playing", entry, ed)
         
 
     def load_complete(self, db):
@@ -68,10 +74,11 @@ class MpDBusPlugin (rb.Plugin):
         Unfortunately, this includes every entry during
         the "startup phase" which consists in scanning
         all the sources of the library
+        
+        Allow sending 'None' for entry
         """
-        if entry:
-            ed = EntryHelper.track_details(self.shell, entry)
-            Bus.publish(self, "entry-changed", ed)
+        ed = EntryHelper.track_details(self.shell, entry)
+        Bus.publish(self, "entry-changed", entry, ed)
 
 
 

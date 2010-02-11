@@ -3,7 +3,6 @@
 
     Created on 2010-02-10
 """
-import dbus
 import dbus.service
 from mbus import Bus
 
@@ -21,12 +20,26 @@ class hPlayer(dbus.service.Object):
     def TrackChange(self, dic):
         pass
 
-    def hEntryPlaying(self, _, ed):
+    def hEntryPlaying(self, _, entry, ed):
+        """
+        Message Bus handler
+        """
         self.TrackChange(ed)
 
+    def sRateCurrentPlaying(self, rating):
+        """
+        DBus signal handler - /Player/RateCurrentPlaying
+        """
+        Bus.publish(self, "rate-current", rating)
+    
 
 player=hPlayer()
 Bus.subscribe("entry-playing", player.hEntryPlaying)
+dbus.Bus().add_signal_receiver(player.sRateCurrentPlaying, 
+                               signal_name="RateCurrentPlaying", 
+                               dbus_interface="org.freedesktop.MediaPlayer", 
+                               bus_name=None, 
+                               path="/Player")
 
 
 class hTrack(dbus.service.Object):
@@ -40,20 +53,17 @@ class hTrack(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface="org.freedesktop.MediaPlayer", signature="a{sv}")
     def Details(self, dic):
-        pass
-    
-    def Rating(self, artist, title, rating):
         """
-        Rating Signal
+        Signal emitter - /Track/Details
         """
-        print ">>> RATING: artist(%s) title(%s) rating(%s)" % (artist, title, rating)
 
-    def hEntryChanged(self, _, ed):
+    def hEntryChanged(self, _, _entry, ed):
+        """
+        Just a springboard to the method which generates the DBus signal
+        """
         self.Details(ed)
-
+    
     
 track=hTrack()
 Bus.subscribe("entry-changed", track.hEntryChanged)
 
-## Subscribe to the "/Track/Rating" signal
-dbus.Bus().add_signal_receiver(track.Rating, signal_name="Rating", dbus_interface="org.freedesktop.MediaPlayer", bus_name=None, path="/Track")

@@ -1,6 +1,9 @@
 # @author Jean-Lou Dupont
 # 
-# Makefile for releasing the project
+# Makefile for:
+#  - releasing the project to the PPA : "orig", "ppa", "pb" and "up" targets
+#
+#  - installing locally : 
 #
 PRJ=rb-mpdbus
 VERSION:=`cat VERSION`
@@ -60,4 +63,4 @@ pb:
 	@echo " RUNNING PBUILDER "
 	@cd "/tmp/$(PRJ)/" && sudo DIST=${DIST} pbuilder build *.dsc
 
-.PHONY: orig ppa pb
+.PHONY: orig ppa pb up

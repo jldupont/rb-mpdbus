@@ -14,6 +14,7 @@ class Logger(object):
 Bus.logger=Logger()
 Bus.debug=False
 
-
+## Order is important here
+import track
 from main import *
 
