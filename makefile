@@ -1,12 +1,22 @@
 # @author Jean-Lou Dupont
 # 
 # Makefile for:
-#  - releasing the project to the PPA : "orig", "ppa", "pb" and "up" targets
+#  - releasing the project to the PPA : 
+#    "ppa" : prepares the required targets for release to the PPA
+#    "pb"  : executes the pBuilder environment for checking package
+#    "up"  : uploads to the PPA
 #
 #  - installing locally : 
+#    "clean"
 #
-PRJ=rb-mpdbus
-VERSION:=`cat VERSION`
+PRJ_NAME=rb-mpdbus
+VERSION=`cat VERSION`
+
+export PRJ_NAME
+
+PYTHON=`which python`
+RBP=/usr/lib/rhythmbox/plugins
+PLUGIN_NAME=mpdbus
 
 DEFAULT_DISTRO=karmic
 
@@ -14,53 +24,39 @@ ifeq ($(DIST),)
 	DIST=${DEFAULT_DISTRO}
 endif
 
-all:
-	@echo "Version: ${VERSION}"
-	@echo "Options:"
-	@echo "  clean, orig"
-	@echo "  ppa, pb, up"
+export DIST
+
+
+###################################################
+## LOCAL INSTALLATION RELATED
+###################################################
 
 clean:
-	@echo "Cleaning - Version: ${VERSION}"
-	@rm -r -f /tmp/$(PRJ)
-	
-orig:
-	@echo "* Preparing for packaging -- Version: ${VERSION}, Distribution: ${DIST}"
-	@echo "-------------------------"
-	@echo ""
-	@echo "mkdir directories ( /tmp/$(PRJ)/$(PRJ)-$(VERSION) )"
-	@mkdir -p "/tmp/$(PRJ)"
-	@mkdir -p "/tmp/$(PRJ)/$(PRJ)-$(VERSION)"
-	
-	@echo "Copying package folder"
-	@rsync -r --exclude=*.git* src/ "/tmp/$(PRJ)/$(PRJ)-$(VERSION)"
-
-	@echo "Copying debian folder"
-	@rsync -r --exclude=*.svn* packages/debian "/tmp/$(PRJ)/$(PRJ)-$(VERSION)"
-	@echo "Copying packaging makefile"
-	@cp makefile "/tmp/$(PRJ)/makefile"
-	@cp VERSION "/tmp/$(PRJ)/VERSION"
+	@rm -r -f $(DESTDIR)$(RBP)/${PLUGIN_NAME}/*.pyc
 		
-	@echo "Adjusting debian/changelog to DIST & VERSION"
-	@cat packages/debian/changelog | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g" > "/tmp/${PRJ}/${PRJ}-${VERSION}/debian/changelog"
+uninstall:
+	@rm -r -f $(DESTDIR)$(RBP)/${PLUGIN_NAME}
+		
+install:
+	@install -d $(DESTDIR)$(RBP)/${PLUGIN_NAME}
+	@install -D $(CURDIR)/${PLUGIN_NAME}/*.py                      $(DESTDIR)$(RBP)/${PLUGIN_NAME}/
+	@install -D $(CURDIR)/${PLUGIN_NAME}/${PLUGIN_NAME}.rb-plugin  $(DESTDIR)$(RBP)/${PLUGIN_NAME}/${PLUGIN_NAME}.rb-plugin
+	@python -m compileall ${DESTDIR}$(RBP)/${PLUGIN_NAME}
 	
-	@echo "** SUCCESS: folder ready: /tmp/$(PRJ)"
-	@echo "*** DON'T FORGET TO UPDATE debian/changelog ***"
+buildsrc:
+	debuild -S
 
-ppa:
-	@echo "!!! Have you updated debian/changelog ?"
+all:
+	@echo "For packaging: 'ppa', 'pb', 'up'"
+	@echo "Others:        'clean', 'install', 'uninstall', 'buildsrc'"
 
-	@echo "Running 'debuild'"
-	@cd "/tmp/$(PRJ)/$(PRJ)-$(VERSION)" && debuild -S
+
+###################################################
+## PACKAGING RELATED
+###################################################
 	
-up:
-	@echo "UPLOADING TO PPA"
-	@cd "/tmp/$(PRJ)/" && dput ppa:jldupont/jldupont *.changes
-
-
-pb:
-	@echo " ----------------------------- "
-	@echo " RUNNING PBUILDER "
-	@cd "/tmp/$(PRJ)/" && sudo DIST=${DIST} pbuilder build *.dsc
-
-.PHONY: orig ppa pb up
+	
+ppa up pb:
+	@make PRJ_VERSION=$(VERSION) -C packages $@
+	
+.PHONY: ppa pb up all
