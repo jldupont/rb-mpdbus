@@ -65,3 +65,9 @@ Dependencies
 ============
 
 * DBus python bindings
+
+
+Future
+======
+
+Integration of more signals ( check-out the Totem mpris plugin )
